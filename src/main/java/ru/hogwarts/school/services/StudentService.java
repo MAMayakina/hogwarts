@@ -1,45 +1,46 @@
 package ru.hogwarts.school.services;
 
-import ru.hogwarts.school.model.Student;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class StudentService {
-    private Map<Long, Student> students = new HashMap<>();
-    private long counter = 0;
 
-    public Student addStudent(Student student){
-        student.setId(++counter);
-        students.put(counter, student);
-        return student;
+    private final StudentRepository studentRepository;
+
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
     }
 
-    public Student findStudent(long id){
-        return students.get(id);
+    public Student createStudent(Student student) {
+        return studentRepository.save(student);
     }
 
-    public Student editStudent(Student student){
-        if (students.containsKey(student.getId())) {
-            students.put(student.getId(), student);
-            return student;
-        }
-        return null;
+    public Student findStudent(long id) {
+        return studentRepository.findById(id).get();
     }
 
-    public Student deleteStudent(long id){
-        return students.remove(id);
+    public Student editStudent(Student student) {
+        return studentRepository.save(student);
     }
 
-    public Collection<Student> getAllStudents(){
-        return students.values();
+    public void deleteStudent(long id) {
+        studentRepository.deleteById(id);
     }
 
-    public Collection<Student> getStudentsByAge(int age){
-        Set <Student>studentsByAge = new HashSet<>();
-        for (Student student : students.values()) {
-            if(student.getAge()==age){
+    public Collection<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
+
+    public Collection<Student> getStudentsByAge(int age) {
+        Set<Student> studentsByAge = new HashSet<>();
+        for (Student student : studentRepository.findAll()) {
+            if (student.getAge() == age) {
                 studentsByAge.add(student);
             }
         }

@@ -2,44 +2,45 @@ package ru.hogwarts.school.services;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repository.FacultyRepository;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class FacultyService {
-    private Map<Long, Faculty> faculties = new HashMap<>();
-    private long counter = 0;
 
-    public Faculty addFaculty(Faculty faculty) {
-        faculty.setId(++counter);
-        faculties.put(counter, faculty);
-        return faculty;
+    private final FacultyRepository facultyRepository;
+
+    public FacultyService(FacultyRepository facultyRepository) {
+        this.facultyRepository = facultyRepository;
+    }
+
+    public Faculty createFaculty(Faculty faculty) {
+        return facultyRepository.save(faculty);
     }
 
     public Faculty findFaculty(long id) {
-        return faculties.get(id);
+        return facultyRepository.findById(id).get();
     }
 
     public Faculty editFaculty(Faculty faculty) {
-        if (faculties.containsKey(faculty.getId())) {
-            faculties.put(faculty.getId(), faculty);
-            return faculty;
-        }
-        return null;
+        return facultyRepository.save(faculty);
     }
 
-    public Faculty deleteFaculty(long id) {
-        return faculties.remove(id);
+    public void deleteFaculty(long id) {
+        facultyRepository.deleteById(id);
     }
 
-    public Collection<Faculty> getAllFaculties(){
-        return faculties.values();
+    public Collection<Faculty> getAllFaculties() {
+        return facultyRepository.findAll();
     }
 
-    public Collection<Faculty> getFacultiesByColor(String color){
+    public Collection<Faculty> getFacultiesByColor(String color) {
         Set<Faculty> facultiesByColor = new HashSet<>();
-        for (Faculty faculty : faculties.values()) {
-            if(faculty.getColor().equals(color)){
+        for (Faculty faculty : facultyRepository.findAll()) {
+            if (faculty.getColor().equals(color)) {
                 facultiesByColor.add(faculty);
             }
         }

@@ -40,7 +40,7 @@ public class StudentController {
 
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
-        return studentService.addStudent(student);
+        return studentService.createStudent(student);
     }
 
     @PutMapping
@@ -53,8 +53,9 @@ public class StudentController {
     }
 
     @DeleteMapping("{id}")
-    public Student deleteStudent(@PathVariable Long id) {
-        return studentService.deleteStudent(id);
+    public ResponseEntity deleteStudent(@PathVariable Long id) {
+        studentService.deleteStudent(id);
+        return ResponseEntity.ok().build();
     }
 
 }
