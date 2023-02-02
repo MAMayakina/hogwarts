@@ -32,7 +32,7 @@ public class FacultyController {
     }
 
     @GetMapping("{id}")
-    public Collection<Student> getStudents(@RequestParam Long id) {
+    public Collection<Student> getStudents(@PathVariable Long id) {
         return facultyService.getStudents(id);
     }
 
