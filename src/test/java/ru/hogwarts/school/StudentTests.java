@@ -7,9 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import ru.hogwarts.school.controllers.StudentController;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StudentTests {
@@ -29,6 +33,7 @@ public class StudentTests {
 
     @BeforeEach
     void setUp() {
+        testStudent.setId(1L);
         testStudent.setName("Гриша");
         testStudent.setAge(20);
         studentRepository.save(testStudent);
@@ -47,31 +52,33 @@ public class StudentTests {
 
     @Test
     void findStudentsByIdTest() throws Exception {
-        var student = this.restTemplate.getForObject("http://localhost:" + port + "/students/" + testStudent.getId(), Student.class);
-
-        Assertions.assertThat(student).isNotNull();
-        Assertions.assertThat(student.getName()).isEqualTo(testStudent.getName());
+        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + testStudent.getId(), Student.class)).isEqualTo(testStudent);
     }
 
     @Test
     void findStudentsByAgeTest() throws Exception {
-        var student = this.restTemplate.getForObject("http://localhost:" + port + "/students/" + testStudent.getAge(), Student.class);
+        List<Student> studentList = this.restTemplate.exchange("http://localhost:" + port + "/students?age1=" + testStudent.getAge(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Student>>() {
+                }
+        ).getBody();
 
-        Assertions.assertThat(student).isNotNull();
-        Assertions.assertThat(student.getName()).isEqualTo(testStudent.getName());
-        Assertions.assertThat(student.getAge()).isEqualTo(testStudent.getAge());
+        Assertions.assertThat(studentList.get(0).getName()).isEqualTo(testStudent.getName());
+        Assertions.assertThat(studentList.get(0).getAge()).isEqualTo(testStudent.getAge());
     }
 
     @Test
     void editStudentTest() throws Exception {
-        testStudent.setName("Григорий");
-        Assertions.assertThat(this.restTemplate.postForObject("http://localhost:" + port + "/students", testStudent, Student.class)).isEqualTo(testStudent);
+        testStudent.setName("Тру-ля-ля");
+        restTemplate.put("http://localhost:" + port + "/students", testStudent, Student.class);
+        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + testStudent.getId(), Student.class)).isEqualTo(testStudent);
     }
 
     @Test
     void deleteStudentTest() throws Exception {
-        restTemplate.delete("http://localhost:" + port + "/students/"+ testStudent.getId());
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/students/"+ testStudent.getId(), Student.class)).isNull();
+        restTemplate.delete("http://localhost:" + port + "/students/" + testStudent.getId());
+        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + testStudent.getId(), Student.class)).isNull();
     }
 
 }

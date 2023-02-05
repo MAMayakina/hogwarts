@@ -7,9 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import ru.hogwarts.school.controllers.FacultyController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FacultyTests {
@@ -31,6 +35,7 @@ public class FacultyTests {
 
     @BeforeEach
     void setUp() {
+        testFaculty.setId(1);
         testFaculty.setName("Ля-ля-ля");
         testFaculty.setColor("желтый");
         facultyRepository.save(testFaculty);
@@ -49,31 +54,32 @@ public class FacultyTests {
 
     @Test
     void findFacultyByIdTest() throws Exception {
-        var faculty = this.restTemplate.getForObject("http://localhost:" + port + "/faculties/" + testFaculty.getId(), Faculty.class);
-
-        Assertions.assertThat(faculty).isNotNull();
-        Assertions.assertThat(faculty.getName()).isEqualTo(testFaculty.getName());
-
+        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + testFaculty.getId(), Faculty.class)).isEqualTo(testFaculty);
     }
 
     @Test
     void findFacultyByColorTest() throws Exception {
-        var faculty = this.restTemplate.getForObject("http://localhost:" + port + "/faculties/" + testFaculty.getColor(), Faculty.class);
+        List<Faculty> facultyList = this.restTemplate.exchange("http://localhost:" + port + "/faculties?color=" + testFaculty.getColor(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Faculty>>() {
+                }
+        ).getBody();
 
-        Assertions.assertThat(faculty).isNotNull();
-        Assertions.assertThat(faculty.getName()).isEqualTo(testFaculty.getName());
-        Assertions.assertThat(faculty.getColor()).isEqualTo(testFaculty.getColor());
+        Assertions.assertThat(facultyList.get(0).getName()).isEqualTo(testFaculty.getName());
+        Assertions.assertThat(facultyList.get(0).getColor()).isEqualTo(testFaculty.getColor());
     }
 
     @Test
     void editFacultyTest() throws Exception {
         testFaculty.setName("Тру-ля-ля");
-        Assertions.assertThat(this.restTemplate.postForObject("http://localhost:" + port + "/faculties", testFaculty, Faculty.class)).isEqualTo(testFaculty);
+        restTemplate.put("http://localhost:" + port + "/faculties", testFaculty, Faculty.class);
+        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + testFaculty.getId(), Faculty.class)).isEqualTo(testFaculty);
     }
 
     @Test
     void deleteFacultyTest() throws Exception {
-        restTemplate.delete("http://localhost:" + port + "/faculties/"+ testFaculty.getId());
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/faculties/"+ testFaculty.getId(), Faculty.class)).isNull();
+        restTemplate.delete("http://localhost:" + port + "/faculties/" + testFaculty.getId());
+        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + testFaculty.getId(), Faculty.class)).isNull();
     }
 }
