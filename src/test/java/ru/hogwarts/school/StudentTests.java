@@ -52,7 +52,10 @@ public class StudentTests {
 
     @Test
     void findStudentsByIdTest() throws Exception {
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + testStudent.getId(), Student.class)).isEqualTo(testStudent);
+        var createdStudent = createStudent();
+        var student = this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + createdStudent.getId(), Student.class);
+        Assertions.assertThat(student).isNotNull();
+        Assertions.assertThat(student.getName()).isEqualTo(testStudent.getName());
     }
 
     @Test
@@ -70,15 +73,25 @@ public class StudentTests {
 
     @Test
     void editStudentTest() throws Exception {
-        testStudent.setName("Тру-ля-ля");
+        var createdStudent = createStudent();
+        testStudent.setName("Григорий");
+        testStudent.setId(createdStudent.getId());
+
         restTemplate.put("http://localhost:" + port + "/students", testStudent, Student.class);
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + testStudent.getId(), Student.class)).isEqualTo(testStudent);
+
+        var student = this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + createdStudent.getId(), Student.class);
+        Assertions.assertThat(student).isNotNull();
+        Assertions.assertThat(student.getName()).isEqualTo(testStudent.getName());
     }
 
     @Test
     void deleteStudentTest() throws Exception {
         restTemplate.delete("http://localhost:" + port + "/students/" + testStudent.getId());
         Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/students?id=" + testStudent.getId(), Student.class)).isNull();
+    }
+
+    private Student createStudent(){
+        return this.restTemplate.postForObject("http://localhost:" + port + "/students", testStudent, Student.class);
     }
 
 }

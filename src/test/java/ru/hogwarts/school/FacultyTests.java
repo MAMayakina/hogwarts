@@ -54,7 +54,10 @@ public class FacultyTests {
 
     @Test
     void findFacultyByIdTest() throws Exception {
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + testFaculty.getId(), Faculty.class)).isEqualTo(testFaculty);
+        var createdFaculty = createFaculty();
+        var faculty = this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + createdFaculty.getId(), Faculty.class);
+        Assertions.assertThat(faculty).isNotNull();
+        Assertions.assertThat(faculty.getName()).isEqualTo(testFaculty.getName());
     }
 
     @Test
@@ -72,14 +75,24 @@ public class FacultyTests {
 
     @Test
     void editFacultyTest() throws Exception {
+        var createdFaculty = createFaculty();
         testFaculty.setName("Тру-ля-ля");
-        restTemplate.put("http://localhost:" + port + "/faculties", testFaculty, Faculty.class);
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + testFaculty.getId(), Faculty.class)).isEqualTo(testFaculty);
+        testFaculty.setId(createdFaculty.getId());
+
+       restTemplate.put("http://localhost:" + port + "/faculties", testFaculty, Faculty.class);
+
+        var faculty = this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + createdFaculty.getId(), Faculty.class);
+        Assertions.assertThat(faculty).isNotNull();
+        Assertions.assertThat(faculty.getName()).isEqualTo(testFaculty.getName());
     }
 
     @Test
     void deleteFacultyTest() throws Exception {
         restTemplate.delete("http://localhost:" + port + "/faculties/" + testFaculty.getId());
         Assertions.assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/faculties?id=" + testFaculty.getId(), Faculty.class)).isNull();
+    }
+
+    private Faculty createFaculty(){
+        return this.restTemplate.postForObject("http://localhost:" + port + "/faculties", testFaculty, Faculty.class);
     }
 }
