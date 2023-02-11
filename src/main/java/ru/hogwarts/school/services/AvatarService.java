@@ -1,6 +1,7 @@
 package ru.hogwarts.school.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
@@ -78,6 +79,11 @@ public class AvatarService {
 
     private String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    public List<Avatar> getAllAvatars(Integer number, Integer size) {
+        PageRequest pageRequest = PageRequest.of(number-1, size);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 
 

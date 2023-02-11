@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 
 @RestController
@@ -49,11 +50,18 @@ public class AvatarController {
     @GetMapping("{id}")
     public void downloadAvatar(@PathVariable Long id,
                                HttpServletResponse response) throws IOException{
-        Avatar avatar = avatarService.findAvatar(id);
+        Avatar avatar = avatarService.findAvatar(id;
 
         Path path = Path.of(avatar.getFilePath());
 
         try(InputStream is = Files.newInputStream(path)){}
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<Avatar>> getAllAvatars(@RequestParam("number") Integer number, @RequestParam("size") Integer size) {
+        List<Avatar> avatars = avatarService.getAllAvatars(number, size);
+
+       return ResponseEntity.ok(avatars);
     }
 
 
