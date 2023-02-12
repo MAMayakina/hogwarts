@@ -1,5 +1,15 @@
 package ru.hogwarts.school.services;
-
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -10,11 +20,6 @@ import ru.hogwarts.school.repository.AvatarRepository;
 
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
