@@ -18,12 +18,24 @@ public class InfoController {
 
     @Value("8080")
     private int port;
+
     @GetMapping("/port")
     public int getPort() {
         return port;
     }
+
     @GetMapping
-    public void testParallelStream(){
+    public void testParallelStream() {
         infoService.testParallelStream();
+    }
+
+    @GetMapping("/printStudents")
+    public void printStudents() {
+        infoService.printStudents();
+    }
+
+    @GetMapping("/printStudentsSync")
+    public void printStudentsSync() {
+        infoService.printStudentsSync();
     }
 }
