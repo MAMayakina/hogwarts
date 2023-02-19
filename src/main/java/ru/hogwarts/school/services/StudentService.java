@@ -9,6 +9,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class StudentService {
@@ -73,6 +74,23 @@ public class StudentService {
     public List<Student> getLastStudents() {
         logger.debug("Вызван метод getLastStudents");
         return studentRepository.getLastStudents();
+    }
+
+    public Stream<String> getStudentNameStartedWithA() {
+        return studentRepository.findAll()
+                .stream()
+                .map(Student::getName)
+                .map(String::toUpperCase)
+                .filter(s -> s.startsWith("А"))
+                .sorted();
+    }
+
+    public double getAvgAgeAllStudents() {
+        return studentRepository.findAll()
+                .stream()
+                .mapToDouble(Student::getAge)
+                .average()
+                .orElse(0D);
     }
 
 }

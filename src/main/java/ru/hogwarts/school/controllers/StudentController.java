@@ -8,6 +8,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.services.StudentService;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @RestController
@@ -46,11 +47,6 @@ public class StudentController {
         return studentService.getFacultyById(id);
     }
 
-   /* @PatchMapping("/{id}/avatar")
-    public Student patchStudentAvatar(@PathVariable Long id,
-                                    @RequestParam("avatarId") long avatarId) {
-        return studentService.patchStudentAvatar(id, avatarId);
-    }*/
 
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
@@ -85,6 +81,16 @@ public class StudentController {
     @GetMapping("/query/lastStudents")
     public List<Student> getLastStudents() {
         return studentService.getLastStudents();
+    }
+
+    @GetMapping("/studentNameStartedWithA")
+    public Stream<String> getStudentNameStartedWithA() {
+        return studentService.getStudentNameStartedWithA();
+    }
+
+    @GetMapping("/avgAgeAllStudents")
+    public double getAvgAgeAllStudents() {
+        return studentService.getAvgAgeAllStudents();
     }
 
 }
