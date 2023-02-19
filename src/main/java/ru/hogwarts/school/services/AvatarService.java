@@ -1,15 +1,5 @@
 package ru.hogwarts.school.services;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -20,6 +10,12 @@ import ru.hogwarts.school.repository.AvatarRepository;
 
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -75,7 +71,7 @@ public class AvatarService {
             int height = image.getHeight() / (image.getWidth() / 100);
             BufferedImage data = new BufferedImage(100, height, image.getType());
             Graphics2D graphics = data.createGraphics();
-            graphics.drawImage(image, 0,0,100, height, null);
+            graphics.drawImage(image, 0, 0, 100, height, null);
             graphics.dispose();
             ImageIO.write(data, getExtension(filePath.getFileName().toString()), baos);
             return baos.toByteArray();
@@ -87,7 +83,7 @@ public class AvatarService {
     }
 
     public List<Avatar> getAllAvatars(Integer number, Integer size) {
-        PageRequest pageRequest = PageRequest.of(number-1, size);
+        PageRequest pageRequest = PageRequest.of(number - 1, size);
         return avatarRepository.findAll(pageRequest).getContent();
     }
 
