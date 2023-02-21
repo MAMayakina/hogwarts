@@ -93,4 +93,14 @@ public class StudentController {
         return studentService.getAvgAgeAllStudents();
     }
 
+    @GetMapping("/printStudents")
+    public void printStudents() {
+        studentService.printStudents();
+    }
+
+    @GetMapping("/printStudentsSync")
+    public void printStudentsSync() {
+        studentService.printStudentsSync();
+    }
+
 }
